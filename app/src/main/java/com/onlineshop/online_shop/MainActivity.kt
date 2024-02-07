@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -14,18 +15,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.onlineshop.online_shop.data.dtomodels.ProductDTO
 import com.onlineshop.online_shop.data.dtomodels.ShopDTO
-import com.onlineshop.online_shop.ui.theme.OnlineShopTheme
+import com.onlineshop.online_shop.ui.ShopViewModel
 
 class MainActivity : ComponentActivity() {
 
-    private val mainViewModel: MainViewModel by viewModels()
+    private val shopViewModel: ShopViewModel by viewModels()
+    private val productViewModel: ProductViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +37,10 @@ class MainActivity : ComponentActivity() {
                 color = MaterialTheme.colorScheme.background
             ) {
                 AppNavHost(
-                    mainViewModel,
+                    shopViewModel,
+                    productViewModel,
                     navController = rememberNavController(),
-                    MainViewModel.NavigationItem.Shops.route
+                    ShopViewModel.ShopsScreen.PATH
                 )
             }
         }
@@ -48,71 +50,59 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppNavHost(
-    mainViewModel: MainViewModel,
+    shopViewModel: ShopViewModel,
+    productViewModel: ProductViewModel,
     navController: NavHostController,
-    startDestination: String = MainViewModel.NavigationItem.Shops.route
+    startDestination: String = ShopViewModel.ShopsScreen.PATH
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-        composable(MainViewModel.NavigationItem.Shops.route) {
-            val shops = mainViewModel.shopsFlow.collectAsState()
-            ShopsScreen(shops.value) {
-                navController.navigate(MainViewModel.Screen.PRODUCTS.name)
-            }
+        composable(ShopViewModel.ShopsScreen.PATH) {
+            val shops = shopViewModel.shopsFlow.collectAsState()
+            ShopsScreen(
+                shops.value,
+                onItemClick = { shopId ->
+                    navController.navigate(
+                        ProductViewModel.ProductsScreen.navigationPath(shopId)
+                    )
+                }
+            )
         }
-        composable(MainViewModel.NavigationItem.Products.route) {
-            val products = mainViewModel.productsFlow.collectAsState()
+        composable(ProductViewModel.ProductsScreen.PATH) { backStackEntry ->
+            val shopId = ProductViewModel.ProductsScreen.getShopId(backStackEntry.arguments!!)
+            productViewModel.onShopId(shopId)
+            val products = productViewModel.productsFlow.collectAsState()
             ProductScreen(products.value)
         }
     }
 }
 
 @Composable
-fun ShopsScreen(shops: List<ShopDTO>, onItemClick: (Long) -> Unit) {
+fun ShopsScreen(shops: List<ShopDTO>, onItemClick: (String) -> Unit) {
     LazyColumn {
-        shops.forEach { shopDTO ->
-            item {
-                shopDTO.name?.let {
-                    ClickableText(
-                        modifier = Modifier.fillMaxSize(),
-                        text = AnnotatedString(it),
-                        onClick = { onItemClick(shopDTO.id!!) })
-                }
+        items(shops) { shopDTO ->
+            shopDTO.name?.let {
+                ClickableText(
+                    modifier = Modifier.fillMaxSize(),
+                    text = AnnotatedString(it),
+                    onClick = { onItemClick(shopDTO.id!!) })
             }
         }
     }
 }
 
 @Composable
-fun ProductScreen(product: List<ProductDTO>) {
+fun ProductScreen(products: List<ProductDTO>) {
     LazyColumn {
-        product.forEach { product ->
-            item {
-                product.title?.let {
-                    Text(
-                        modifier = Modifier.fillMaxSize(),
-                        text = AnnotatedString(it)
-                    )
-                }
+        items(products) { product ->
+            product.title?.let {
+                Text(
+                    modifier = Modifier.fillMaxSize(),
+                    text = AnnotatedString(it)
+                )
             }
         }
-    }
-}
-
-@Composable
-fun TestView(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    OnlineShopTheme {
-        TestView("Android")
     }
 }
