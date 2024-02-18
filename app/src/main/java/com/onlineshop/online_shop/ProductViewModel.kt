@@ -5,7 +5,6 @@ import com.onlineshop.online_shop.data.dtomodels.ProductDTO
 import com.onlineshop.online_shop.data.dtomodels.ProductRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlin.properties.Delegates
 
 class ProductViewModel(private val productRepository: ProductRepository,shopId: Long) : ViewModel() {
 

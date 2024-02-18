@@ -5,16 +5,21 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
@@ -91,8 +96,8 @@ fun AppNavHost(
                     )
                 }
             )
-            // TODO navigate to ProductInformation screen after onClick
         }
+
         composable(NavigationManager.ProductInformation.PATH) { backStackEntry ->
             val productId =
                 NavigationManager.ProductInformation.getProductId(backStackEntry.arguments!!)
@@ -119,9 +124,16 @@ fun ShopsScreen(shops: List<ShopDTO>, onItemClick: (Long) -> Unit) {
         items(shops) { shopDTO ->
             shopDTO.name?.let {
                 ClickableText(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
+                    style = MaterialTheme
+                        .typography
+                        .bodyMedium
+                        .copy(fontSize = 26.sp),
                     text = AnnotatedString(it),
                     onClick = { onItemClick(shopDTO.id) })
+                Divider(modifier = Modifier, thickness = 1.dp, color = Color.Black)
             }
         }
     }
@@ -133,10 +145,20 @@ fun ProductScreen(products: List<ProductDTO>, onItemClick: (Long) -> Unit) {
         items(products) { product ->
             product.title?.let {
                 ClickableText(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
                     text = AnnotatedString(it),
-                    onClick = { onItemClick(product.id) }
+                    onClick = { onItemClick(product.id) },
+                    style = MaterialTheme
+                        .typography
+                        .bodyMedium
+                        .copy(
+                            fontSize = 26.sp
+                        )
                 )
+
+                Divider(modifier = Modifier, thickness = 1.dp, color = Color.Black)
             }
         }
     }
@@ -145,18 +167,31 @@ fun ProductScreen(products: List<ProductDTO>, onItemClick: (Long) -> Unit) {
 @Composable
 fun ProductInformationScreen(product: ProductDTO) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
     ) {
         Text(
-            text = AnnotatedString(product.price.toString())
+            text = AnnotatedString(product.price.toString()),
+            style = MaterialTheme
+                .typography
+                .bodyMedium
+                .copy(fontSize = 26.sp)
         )
+        Divider(modifier = Modifier, thickness = 1.dp, color = Color.Black)
 
-        Text(
-            text = AnnotatedString(product.category ?: "")
-        )
+        Text(text = AnnotatedString(product.category ?: ""),
+            style = MaterialTheme
+                .typography
+                .bodyMedium
+                .copy(fontSize = 26.sp))
+        Divider(modifier = Modifier, thickness = 1.dp, color = Color.Black)
 
-        Text(
-            text = AnnotatedString(product.description ?: "")
-        )
+        Text(text = AnnotatedString(product.description ?: ""),
+            style = MaterialTheme
+                .typography
+                .bodyMedium
+                .copy(fontSize = 26.sp))
+        Divider(modifier = Modifier, thickness = 1.dp, color = Color.Black)
     }
 }
