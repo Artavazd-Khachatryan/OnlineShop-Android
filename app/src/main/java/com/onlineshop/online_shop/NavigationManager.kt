@@ -22,12 +22,17 @@ class NavigationManager {
         const val PATH = "{$ARG_SHOP_ID}/products"
 
         fun getShopId(arg: Bundle): Long =
-            arg.getString(ARG_SHOP_ID)?.toLong() ?: throw Resources.NotFoundException("Argument shop id not found")
+            arg.getString(ARG_SHOP_ID)?.toLong()
+                ?: throw Resources.NotFoundException("Argument shop id not found")
 
         fun navigationPath(shopId: Long): String = PATH.replace("{$ARG_SHOP_ID}", "$shopId")
     }
 
     object ShopsScreen {
         const val PATH = "shops"
+    }
+
+    object LoginScreen {
+        const val PATH = "login"
     }
 }

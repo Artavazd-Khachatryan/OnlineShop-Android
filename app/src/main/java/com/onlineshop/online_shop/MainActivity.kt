@@ -3,18 +3,27 @@ package com.onlineshop.online_shop
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
@@ -43,7 +52,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 AppNavHost(
                     navController = rememberNavController(),
-                    NavigationManager.ShopsScreen.PATH
+                    NavigationManager.LoginScreen.PATH
                 )
             }
         }
@@ -115,6 +124,10 @@ fun AppNavHost(
             val product = productInformationViewModel.productFlow.collectAsState()
             product.value?.let { ProductInformationScreen(product = it) }
         }
+
+        composable(NavigationManager.LoginScreen.PATH) {
+            LoginScreen()
+        }
     }
 }
 
@@ -180,18 +193,73 @@ fun ProductInformationScreen(product: ProductDTO) {
         )
         Divider(modifier = Modifier, thickness = 1.dp, color = Color.Black)
 
-        Text(text = AnnotatedString(product.category ?: ""),
+        Text(
+            text = AnnotatedString(product.category ?: ""),
             style = MaterialTheme
                 .typography
                 .bodyMedium
-                .copy(fontSize = 26.sp))
+                .copy(fontSize = 26.sp)
+        )
         Divider(modifier = Modifier, thickness = 1.dp, color = Color.Black)
 
-        Text(text = AnnotatedString(product.description ?: ""),
+        Text(
+            text = AnnotatedString(product.description ?: ""),
             style = MaterialTheme
                 .typography
                 .bodyMedium
-                .copy(fontSize = 26.sp))
+                .copy(fontSize = 26.sp)
+        )
         Divider(modifier = Modifier, thickness = 1.dp, color = Color.Black)
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LoginScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        var text by remember { mutableStateOf("") }
+        TextField(
+            value = text,
+            onValueChange = { newText ->
+                text = newText
+            },
+            placeholder = {
+                Text("Email")
+            }
+        )
+
+        Divider(modifier = Modifier, thickness = 8.dp, color = Color.White)
+
+        TextField(
+            value = text,
+            onValueChange = { newText ->
+                text = newText
+            },
+            placeholder = {
+                Text("Password")
+            }
+        )
+        
+        Divider(modifier = Modifier, thickness = 20.dp, color = Color.White)
+
+        Button(
+            onClick = { /*TODO*/ }) {
+            Text(text = "Login")
+        }
+        
+        Button(onClick = { /*TODO*/ }) {
+            Text(text = "Register")
+        }
+    }
+}
+
+@Composable
+fun RegisterScreen() {
+
 }
