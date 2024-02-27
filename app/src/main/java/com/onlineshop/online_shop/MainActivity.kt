@@ -3,43 +3,25 @@ package com.onlineshop.online_shop
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.onlineshop.online_shop.data.dtomodels.ProductDTO
 import com.onlineshop.online_shop.data.dtomodels.ProductRepository
-import com.onlineshop.online_shop.data.dtomodels.ShopDTO
 import com.onlineshop.online_shop.data.dtomodels.ShopRepository
+import com.onlineshop.online_shop.ui.screens.LoginScreen
+import com.onlineshop.online_shop.ui.screens.ProductInformationScreen
+import com.onlineshop.online_shop.ui.screens.ProductScreen
+import com.onlineshop.online_shop.ui.screens.RegisterScreen
+import com.onlineshop.online_shop.ui.screens.ShopsScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -87,7 +69,6 @@ fun AppNavHost(
         }
 
         composable(NavigationManager.ProductsScreen.PATH) { backStackEntry ->
-
             val shopId = NavigationManager.ProductsScreen.getShopId(backStackEntry.arguments!!)
             val productViewModel: ProductViewModel = viewModel(
                 factory = viewModelFactory {
@@ -111,7 +92,6 @@ fun AppNavHost(
         composable(NavigationManager.ProductInformation.PATH) { backStackEntry ->
             val productId =
                 NavigationManager.ProductInformation.getProductId(backStackEntry.arguments!!)
-
             val productInformationViewModel: ProductInformationViewModel = viewModel(
                 factory = viewModelFactory {
                     addInitializer(ProductInformationViewModel::class) {
@@ -127,208 +107,15 @@ fun AppNavHost(
         }
 
         composable(NavigationManager.LoginScreen.PATH) {
-            val onRegisterClick = object : OnRegisterClick{
-                override fun onClick() {
-                    navController.navigate(NavigationManager.RegisterScreen.PATH)
-                }
-
-            }
-
-            LoginScreen(onRegisterClick)
+            LoginScreen(
+                onLoginClick = {},
+                onRegisterClick = { navController.navigate(NavigationManager.RegisterScreen.PATH) }
+            )
         }
 
-        composable(NavigationManager.RegisterScreen.PATH){
+        composable(NavigationManager.RegisterScreen.PATH) {
             RegisterScreen()
         }
     }
 }
 
-@Composable
-fun ShopsScreen(shops: List<ShopDTO>, onItemClick: (Long) -> Unit) {
-    LazyColumn {
-        items(shops) { shopDTO ->
-            shopDTO.name?.let {
-                ClickableText(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                    style = MaterialTheme
-                        .typography
-                        .bodyMedium
-                        .copy(fontSize = 26.sp),
-                    text = AnnotatedString(it),
-                    onClick = { onItemClick(shopDTO.id) })
-                Divider(modifier = Modifier, thickness = 1.dp, color = Color.Black)
-            }
-        }
-    }
-}
-
-@Composable
-fun ProductScreen(products: List<ProductDTO>, onItemClick: (Long) -> Unit) {
-    LazyColumn {
-        items(products) { product ->
-            product.title?.let {
-                ClickableText(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                    text = AnnotatedString(it),
-                    onClick = { onItemClick(product.id) },
-                    style = MaterialTheme
-                        .typography
-                        .bodyMedium
-                        .copy(
-                            fontSize = 26.sp
-                        )
-                )
-
-                Divider(modifier = Modifier, thickness = 1.dp, color = Color.Black)
-            }
-        }
-    }
-}
-
-@Composable
-fun ProductInformationScreen(product: ProductDTO) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
-        Text(
-            text = AnnotatedString(product.price.toString()),
-            style = MaterialTheme
-                .typography
-                .bodyMedium
-                .copy(fontSize = 26.sp)
-        )
-        Divider(modifier = Modifier, thickness = 1.dp, color = Color.Black)
-
-        Text(
-            text = AnnotatedString(product.category ?: ""),
-            style = MaterialTheme
-                .typography
-                .bodyMedium
-                .copy(fontSize = 26.sp)
-        )
-        Divider(modifier = Modifier, thickness = 1.dp, color = Color.Black)
-
-        Text(
-            text = AnnotatedString(product.description ?: ""),
-            style = MaterialTheme
-                .typography
-                .bodyMedium
-                .copy(fontSize = 26.sp)
-        )
-        Divider(modifier = Modifier, thickness = 1.dp, color = Color.Black)
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun LoginScreen(onRegisterClick: OnRegisterClick) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        var eMailText by remember { mutableStateOf("") }
-        TextField(
-            value = eMailText,
-            onValueChange = { newText ->
-                eMailText = newText
-            },
-            placeholder = {
-                Text("Email")
-            }
-        )
-
-        Divider(modifier = Modifier, thickness = 8.dp, color = Color.White)
-
-        var passwordText by remember { mutableStateOf("") }
-
-        TextField(
-            value = passwordText,
-            onValueChange = { newText ->
-                passwordText = newText
-            },
-            placeholder = {
-                Text("Password")
-            }
-        )
-
-        Divider(modifier = Modifier, thickness = 20.dp, color = Color.White)
-
-        Button(
-            onClick = { /*TODO*/ }) {
-            Text(text = "Login")
-        }
-
-        Button(onClick = { onRegisterClick.onClick() }) {
-            Text(text = "Register")
-        }
-    }
-}
-
-@Preview
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun RegisterScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        var eMailText by remember { mutableStateOf("") }
-        TextField(
-            value = eMailText,
-            onValueChange = { newText ->
-                eMailText = newText
-            },
-            placeholder = {
-                Text("Email")
-            }
-        )
-
-        Divider(modifier = Modifier, thickness = 8.dp, color = Color.White)
-
-        var passwordText by remember { mutableStateOf("") }
-        TextField(
-            value = passwordText,
-            onValueChange = { newText ->
-                passwordText = newText
-            },
-            placeholder = {
-                Text("Password")
-            }
-        )
-
-        Divider(modifier = Modifier, thickness = 8.dp, color = Color.White)
-
-        var tryPassword by remember { mutableStateOf("") }
-        TextField(
-            value = tryPassword,
-            onValueChange = { newText ->
-                tryPassword = newText
-            },
-            placeholder = {
-                Text("Repeat password")
-            }
-        )
-
-        Divider(modifier = Modifier, thickness = 500.dp, color = Color.White)
-
-        Button(onClick = { /*TODO*/ }) {
-            Text(text = "Register")
-        }
-    }
-}
-
-private interface OnRegisterClick {
-    fun onClick()
-}
