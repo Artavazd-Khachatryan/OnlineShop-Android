@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -62,7 +63,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    startDestination: String = NavigationManager.ShopsScreen.PATH
+    startDestination: String
 ) {
     NavHost(
         navController = navController,
@@ -126,7 +127,18 @@ fun AppNavHost(
         }
 
         composable(NavigationManager.LoginScreen.PATH) {
-            LoginScreen()
+            val onRegisterClick = object : OnRegisterClick{
+                override fun onClick() {
+                    navController.navigate(NavigationManager.RegisterScreen.PATH)
+                }
+
+            }
+
+            LoginScreen(onRegisterClick)
+        }
+
+        composable(NavigationManager.RegisterScreen.PATH){
+            RegisterScreen()
         }
     }
 }
@@ -215,7 +227,7 @@ fun ProductInformationScreen(product: ProductDTO) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen() {
+private fun LoginScreen(onRegisterClick: OnRegisterClick) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -223,11 +235,11 @@ fun LoginScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        var text by remember { mutableStateOf("") }
+        var eMailText by remember { mutableStateOf("") }
         TextField(
-            value = text,
+            value = eMailText,
             onValueChange = { newText ->
-                text = newText
+                eMailText = newText
             },
             placeholder = {
                 Text("Email")
@@ -236,30 +248,87 @@ fun LoginScreen() {
 
         Divider(modifier = Modifier, thickness = 8.dp, color = Color.White)
 
+        var passwordText by remember { mutableStateOf("") }
+
         TextField(
-            value = text,
+            value = passwordText,
             onValueChange = { newText ->
-                text = newText
+                passwordText = newText
             },
             placeholder = {
                 Text("Password")
             }
         )
-        
+
         Divider(modifier = Modifier, thickness = 20.dp, color = Color.White)
 
         Button(
             onClick = { /*TODO*/ }) {
             Text(text = "Login")
         }
-        
+
+        Button(onClick = { onRegisterClick.onClick() }) {
+            Text(text = "Register")
+        }
+    }
+}
+
+@Preview
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RegisterScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        var eMailText by remember { mutableStateOf("") }
+        TextField(
+            value = eMailText,
+            onValueChange = { newText ->
+                eMailText = newText
+            },
+            placeholder = {
+                Text("Email")
+            }
+        )
+
+        Divider(modifier = Modifier, thickness = 8.dp, color = Color.White)
+
+        var passwordText by remember { mutableStateOf("") }
+        TextField(
+            value = passwordText,
+            onValueChange = { newText ->
+                passwordText = newText
+            },
+            placeholder = {
+                Text("Password")
+            }
+        )
+
+        Divider(modifier = Modifier, thickness = 8.dp, color = Color.White)
+
+        var tryPassword by remember { mutableStateOf("") }
+        TextField(
+            value = tryPassword,
+            onValueChange = { newText ->
+                tryPassword = newText
+            },
+            placeholder = {
+                Text("Repeat password")
+            }
+        )
+
+        Divider(modifier = Modifier, thickness = 500.dp, color = Color.White)
+
         Button(onClick = { /*TODO*/ }) {
             Text(text = "Register")
         }
     }
 }
 
-@Composable
-fun RegisterScreen() {
-
+private interface OnRegisterClick {
+    fun onClick()
 }

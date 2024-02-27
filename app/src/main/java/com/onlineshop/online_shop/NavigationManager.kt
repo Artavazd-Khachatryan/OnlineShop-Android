@@ -35,4 +35,8 @@ class NavigationManager {
     object LoginScreen {
         const val PATH = "login"
     }
+
+    object RegisterScreen {
+        const val PATH = "register"
+    }
 }
