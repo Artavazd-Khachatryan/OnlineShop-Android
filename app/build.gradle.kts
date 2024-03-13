@@ -23,7 +23,10 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
@@ -56,8 +59,16 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation("com.onlineshop:onlineshoplibrary:1.0")
+    implementation("com.onlineshop:onlineshoplibrary:2.0")
+    //implementation ("com.github.Artavazd-Khachatryan:OnlineShop-KMM-Library:-SNAPSHOT")
     implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    //koin
+    val koin_version = "3.5.3"
+    implementation(platform("io.insert-koin:koin-bom:$koin_version"))
+    implementation("io.insert-koin:koin-core")
+    implementation("io.insert-koin:koin-android")
+    testImplementation("io.insert-koin:koin-test")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

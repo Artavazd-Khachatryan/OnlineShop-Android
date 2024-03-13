@@ -14,10 +14,6 @@ class ProductRepository {
         add(ProductDTO(id = 8, shopId = 1, "Iphone", null, 300.0, "Ios smartphone"))
     }
 
-    fun getProductWithId(shopId: Long): List<ProductDTO> {
-        return productList.filter { product -> shopId == product.shopId }
-    }
-
     fun getProduct(productId: Long): ProductDTO?{
         return productList.find { product -> productId == product.id }
     }

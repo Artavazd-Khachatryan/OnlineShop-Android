@@ -16,18 +16,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.onlineshop.online_shop.data.dtomodels.ProductRepository
-import com.onlineshop.online_shop.data.dtomodels.ShopRepository
 import com.onlineshop.online_shop.ui.screens.LoginScreen
 import com.onlineshop.online_shop.ui.screens.ProductInformationScreen
 import com.onlineshop.online_shop.ui.screens.ProductScreen
 import com.onlineshop.online_shop.ui.screens.RegisterScreen
 import com.onlineshop.online_shop.ui.screens.ShopsScreen
+import com.onlineshop.onlineshopkmmlibrary.Greeting
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val shopViewModel: ShopViewModel by viewModel<ShopViewModel>()
+    private val productViewModel: ProductViewModel by viewModel<ProductViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        Greeting()
         setContent {
             Surface(
                 modifier = Modifier.fillMaxSize(),
@@ -35,7 +40,9 @@ class MainActivity : ComponentActivity() {
             ) {
                 AppNavHost(
                     navController = rememberNavController(),
-                    NavigationManager.LoginScreen.PATH
+                    NavigationManager.LoginScreen.PATH,
+                    shopViewModel,
+                    productViewModel
                 )
             }
         }
@@ -45,18 +52,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    startDestination: String
+    startDestination: String,
+    shopViewModel: ShopViewModel,
+    productViewModel: ProductViewModel
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
         composable(NavigationManager.ShopsScreen.PATH) {
-            val shopViewModel: ShopViewModel = viewModel(factory = viewModelFactory {
-                addInitializer(ShopViewModel::class) {
-                    ShopViewModel(ShopRepository())
-                }
-            })
             val shops = shopViewModel.shopsFlow.collectAsState()
             ShopsScreen(
                 shops.value,
@@ -70,13 +74,7 @@ fun AppNavHost(
 
         composable(NavigationManager.ProductsScreen.PATH) { backStackEntry ->
             val shopId = NavigationManager.ProductsScreen.getShopId(backStackEntry.arguments!!)
-            val productViewModel: ProductViewModel = viewModel(
-                factory = viewModelFactory {
-                    addInitializer(ProductViewModel::class) {
-                        ProductViewModel(ProductRepository(), shopId)
-                    }
-                }
-            )
+            productViewModel.shopId = shopId
 
             val products = productViewModel.productsFlow.collectAsState()
             ProductScreen(

@@ -1,5 +1,6 @@
 package com.onlineshop.online_shop.data.dtomodels
 
+// TODO delete
 class ShopRepository {
 
     fun getShopList(): List<ShopDTO> {
