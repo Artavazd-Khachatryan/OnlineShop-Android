@@ -18,10 +18,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.onlineshop.online_shop.LoginViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
+fun LoginScreen(
+    onLoginClick: () -> Unit,
+    onRegisterClick: () -> Unit,
+    loginViewModel: LoginViewModel
+) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,6 +59,8 @@ fun LoginScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
                 Text("Password")
             }
         )
+
+        loginViewModel.login(emailText, passwordText)
 
         Divider(modifier = Modifier, thickness = 20.dp, color = Color.White)
 

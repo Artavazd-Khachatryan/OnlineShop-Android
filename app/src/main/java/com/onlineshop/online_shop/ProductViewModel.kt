@@ -27,7 +27,7 @@ class ProductViewModel(
                 val productsDTO = productEntities.map { productEntity ->
                     ProductDTO(
                         id = productEntity.id,
-                        shopId = productEntity.shop,
+                        shopId = productEntity.shopId,
                         title = productEntity.title,
                         description = productEntity.description,
                         price = productEntity.price,

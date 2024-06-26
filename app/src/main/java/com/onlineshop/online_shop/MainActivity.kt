@@ -28,6 +28,8 @@ class MainActivity : ComponentActivity() {
 
     private val shopViewModel: ShopViewModel by viewModel<ShopViewModel>()
     private val productViewModel: ProductViewModel by viewModel<ProductViewModel>()
+    private val loginViewModel: LoginViewModel by viewModel<LoginViewModel>()
+    private val signupViewModel: SignupViewModel by viewModel<SignupViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,73 +49,73 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
 
-@Composable
-fun AppNavHost(
-    navController: NavHostController,
-    startDestination: String,
-    shopViewModel: ShopViewModel,
-    productViewModel: ProductViewModel
-) {
-    NavHost(
-        navController = navController,
-        startDestination = startDestination
+    @Composable
+    fun AppNavHost(
+        navController: NavHostController,
+        startDestination: String,
+        shopViewModel: ShopViewModel,
+        productViewModel: ProductViewModel
     ) {
-        composable(NavigationManager.ShopsScreen.PATH) {
-            val shops = shopViewModel.shopsFlow.collectAsState()
-            ShopsScreen(
-                shops.value,
-                onItemClick = { shopId ->
-                    navController.navigate(
-                        NavigationManager.ProductsScreen.navigationPath(shopId)
-                    )
-                }
-            )
-        }
-
-        composable(NavigationManager.ProductsScreen.PATH) { backStackEntry ->
-            val shopId = NavigationManager.ProductsScreen.getShopId(backStackEntry.arguments!!)
-            productViewModel.shopId = shopId
-
-            val products = productViewModel.productsFlow.collectAsState()
-            ProductScreen(
-                products.value,
-                onItemClick = { productId ->
-                    navController.navigate(
-                        NavigationManager.ProductInformation.navigationPath(productId)
-                    )
-                }
-            )
-        }
-
-        composable(NavigationManager.ProductInformation.PATH) { backStackEntry ->
-            val productId =
-                NavigationManager.ProductInformation.getProductId(backStackEntry.arguments!!)
-            val productInformationViewModel: ProductInformationViewModel = viewModel(
-                factory = viewModelFactory {
-                    addInitializer(ProductInformationViewModel::class) {
-                        ProductInformationViewModel(
-                            ProductRepository(),
-                            productId
+        NavHost(
+            navController = navController,
+            startDestination = startDestination
+        ) {
+            composable(NavigationManager.ShopsScreen.PATH) {
+                val shops = shopViewModel.shopsFlow.collectAsState()
+                ShopsScreen(
+                    shops.value,
+                    onItemClick = { shopId ->
+                        navController.navigate(
+                            NavigationManager.ProductsScreen.navigationPath(shopId)
                         )
                     }
-                })
+                )
+            }
 
-            val product = productInformationViewModel.productFlow.collectAsState()
-            product.value?.let { ProductInformationScreen(product = it) }
-        }
+            composable(NavigationManager.ProductsScreen.PATH) { backStackEntry ->
+                val shopId = NavigationManager.ProductsScreen.getShopId(backStackEntry.arguments!!)
+                productViewModel.shopId = shopId
 
-        composable(NavigationManager.LoginScreen.PATH) {
-            LoginScreen(
-                onLoginClick = {},
-                onRegisterClick = { navController.navigate(NavigationManager.RegisterScreen.PATH) }
-            )
-        }
+                val products = productViewModel.productsFlow.collectAsState()
+                ProductScreen(
+                    products.value,
+                    onItemClick = { productId ->
+                        navController.navigate(
+                            NavigationManager.ProductInformation.navigationPath(productId)
+                        )
+                    }
+                )
+            }
 
-        composable(NavigationManager.RegisterScreen.PATH) {
-            RegisterScreen()
+            composable(NavigationManager.ProductInformation.PATH) { backStackEntry ->
+                val productId =
+                    NavigationManager.ProductInformation.getProductId(backStackEntry.arguments!!)
+                val productInformationViewModel: ProductInformationViewModel = viewModel(
+                    factory = viewModelFactory {
+                        addInitializer(ProductInformationViewModel::class) {
+                            ProductInformationViewModel(
+                                ProductRepository(),
+                                productId
+                            )
+                        }
+                    })
+
+                val product = productInformationViewModel.productFlow.collectAsState()
+                product.value?.let { ProductInformationScreen(product = it) }
+            }
+
+            composable(NavigationManager.LoginScreen.PATH) {
+                LoginScreen(
+                    onLoginClick = {},
+                    onRegisterClick = { navController.navigate(NavigationManager.RegisterScreen.PATH) },
+                    loginViewModel
+                )
+            }
+
+            composable(NavigationManager.RegisterScreen.PATH) {
+                RegisterScreen(signupViewModel)
+            }
         }
     }
 }
-

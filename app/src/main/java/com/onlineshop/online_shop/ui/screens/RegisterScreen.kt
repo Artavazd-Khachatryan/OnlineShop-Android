@@ -19,11 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.onlineshop.online_shop.SignupViewModel
 
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(signupViewModel: SignupViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -31,7 +32,39 @@ fun RegisterScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
+        Divider(modifier = Modifier, thickness = 50.dp, color = Color.White)
+
+        var firstNametext by remember { mutableStateOf("") }
+
+        TextField(
+            value = firstNametext,
+            onValueChange = { newText ->
+                firstNametext = newText
+            },
+            placeholder = {
+                Text("Firstname")
+            }
+        )
+
+        Divider(modifier = Modifier, thickness = 8.dp, color = Color.White)
+
+        var lastNametext by remember { mutableStateOf("") }
+
+        TextField(
+            value = lastNametext,
+            onValueChange = { newText ->
+                lastNametext = newText
+            },
+            placeholder = {
+                Text("Lastname")
+            }
+        )
+
+        Divider(modifier = Modifier, thickness = 8.dp, color = Color.White)
+
         var eMailText by remember { mutableStateOf("") }
+
         TextField(
             value = eMailText,
             onValueChange = { newText ->
@@ -68,9 +101,11 @@ fun RegisterScreen() {
             }
         )
 
-        Divider(modifier = Modifier, thickness = 500.dp, color = Color.White)
+        Divider(modifier = Modifier, thickness = 50.dp, color = Color.White)
 
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = {
+            signupViewModel.signup(firstNametext, lastNametext, eMailText, passwordText, "USER")
+        }) {
             Text(text = "Register")
         }
     }
